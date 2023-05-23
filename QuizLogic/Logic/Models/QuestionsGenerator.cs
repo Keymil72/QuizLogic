@@ -77,20 +77,22 @@ namespace QuizLogic.Logic.Models
                 //for loop adding incorrect answers to answerList
                 for (int i = 0; i < max-1; i++)
                 {
-                    answer.id = answerId;
-                    answer.content = deepl.Translate(question.IncorrectAnswers.ElementAt(i));
-                    answer.isCorrect = true;
-                    answer.displayOrder = listNumbers[answerId - 1];
-                    answerList.Add(answer);
+                    Answer answerIncorrect = new Answer();
+                    answerIncorrect.id = answerId;
+                    answerIncorrect.content = deepl.Translate(question.IncorrectAnswers.ElementAt(i));
+                    answerIncorrect.isCorrect = false;
+                    answerIncorrect.displayOrder = listNumbers[answerId];
+                    answerList.Add(answerIncorrect);
                     answerId++;
                 }
+
 
                 //question add to list of questions
                 temp.id = id;
                 temp.questionType = question.Type;
-                temp.questionCategory = question.Category;
+                temp.questionCategory = deepl.Translate(question.Category);
                 temp.difficulty = difficulty;
-                temp.content = question.Content;
+                temp.content = deepl.Translate(question.Content);
                 temp.answers = answerList;
                 questions.Add(temp);
                 id++;

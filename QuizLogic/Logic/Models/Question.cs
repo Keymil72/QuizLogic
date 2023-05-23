@@ -15,7 +15,7 @@ namespace QuizLogic.Logic.Models
         public Difficulty difficulty { get; set; }
         public string content { get; set; }
 
-        public List<Answer> answers { get; set; } = new List<Answer>();
+        public List<Answer> answers { get; set; }
 
 
 
