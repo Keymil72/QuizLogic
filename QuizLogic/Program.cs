@@ -1,31 +1,36 @@
 ﻿using QuizLogic.Logic;
 using Trivia4NET;
+using QuizLogic.Logic.Models;
 using Trivia4NET.Entities;
-using DeepL;
-using DeepL.Model;
+using Question = QuizLogic.Logic.Models.Question;
 
 var service = new TriviaService();
 
 var response = await service.RequestTokenAsync();
 var token = response.SessionToken;
 
-var categories = await service.GetCategoriesAsync();
-var cats = categories.Categories;
-var questions = await service.GetQuestionsAsync(token,
-    amount: 1, difficulty: Difficulty.Easy, QuestionType.Multiple, 10);
-
-var question = questions.Questions[0];
 TranslatorDeepl translator = new TranslatorDeepl();
-string text = translator.Translate(question.Content);
-Console.WriteLine(text);
 
-//Console.WriteLine();
-//foreach (var category in cats)
-//{
-//    Console.WriteLine(category);
-//}
+
+AllCategories allCategories = new AllCategories();
+
+Dictionary<int, string> categories = allCategories.Get();
+QuestionsGenerator generator = new QuestionsGenerator();
+List<Question> questions = generator.Get(service, token, QuestionType.Multiple, 15, Difficulty.Easy, 2);
+Question question = questions.First();
+
+
+
+//foreach (var category in categories)
+//    Console.WriteLine(category.Key + ". " + category.Value);
+
+
+//string text = translator.Translate(question.Content);
+//Console.WriteLine(text);
+//Console.WriteLine(translator.Translate(question.Category));
+
 //foreach (var item in question.IncorrectAnswers)
 //{
-//    Console.WriteLine(item);
+//    Console.WriteLine(translator.Translate(item));
 //}
-//Console.WriteLine(question.Answer);
+//Console.WriteLine(translator.Translate(question.Answer));
