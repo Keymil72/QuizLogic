@@ -11,7 +11,7 @@ namespace QuizLogic.Logic.Models
     {
         public int id { get; set; }
         public QuestionType questionType { get; set; }
-        public string questionCategory { get; set; }
+        public int questionCategory { get; set; }
         public Difficulty difficulty { get; set; }
         public string content { get; set; }
 
