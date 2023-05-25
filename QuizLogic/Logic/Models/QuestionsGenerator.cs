@@ -46,13 +46,13 @@ namespace QuizLogic.Logic.Models
                 int max;
 
                 //if statment setting max value for question type to for loop
-                if(q.questionType.Equals(QuestionType.YesNo)) 
-                    max = 1;
+                if(question.Type.Equals(QuestionType.YesNo)) 
+                    max = 2;
                 else
                     max = 4;
 
                 //lists to generate not repeating display order to question answer
-                List<int> possible = Enumerable.Range(1, 4).ToList();
+                List<int> possible = Enumerable.Range(0, max).ToList();
                 List<int> listNumbers = new List<int>();
 
                 Random rng = new Random();
@@ -70,18 +70,18 @@ namespace QuizLogic.Logic.Models
                 answer.id = answerId;
                 answer.content = deepl.Translate(question.Answer);
                 answer.isCorrect = true;
-                answer.displayOrder = listNumbers[answerId];
+                answer.displayOrder = listNumbers[answerId] + 1;
                 answerList.Add(answer);
                 answerId++;
 
-                //for loop adding incorrect answers to answerList
+                //for loop adding incorrect answers to answerList with multiple answers
                 for (int i = 0; i < max-1; i++)
                 {
                     Answer answerIncorrect = new Answer();
                     answerIncorrect.id = answerId;
                     answerIncorrect.content = deepl.Translate(question.IncorrectAnswers.ElementAt(i));
                     answerIncorrect.isCorrect = false;
-                    answerIncorrect.displayOrder = listNumbers[answerId];
+                    answerIncorrect.displayOrder = listNumbers[answerId] + 1;
                     answerList.Add(answerIncorrect);
                     answerId++;
                 }

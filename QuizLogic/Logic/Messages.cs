@@ -1,11 +1,5 @@
 ﻿using QuizLogic.Logic.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Channels;
-using System.Threading.Tasks;
+
 using Trivia4NET.Entities;
 using Convert = QuizLogic.Logic.Models.Convert;
 using Question = QuizLogic.Logic.Models.Question;
@@ -14,52 +8,72 @@ namespace QuizLogic.Logic
 {
     internal class Messages
     {
-        Play play = new Play();
-        Question question = new Question();
         Convert convert = new Convert();
-        Game game = new Game();
-        AllCategories allCategories = new AllCategories();
+        TranslatorDeepl deepl = new TranslatorDeepl();
         InputVerify verify = new InputVerify();
-        internal Dictionary<Question, Game> WelcomeScreen()
+
+        bool stop = false;
+        internal async void LoadingScreen(int delay, string text)
         {
+            string l = "..................................................";
+            for (int i = 0; i < 50; i++)
+            {
+                if (stop)
+                {
+                    delay = 10;
+                }
+
+                l = l.Remove(i, 1).Insert(i, "#");
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Trwa " + text);
+                Console.WriteLine("[" + l + "]");
+                await Task.Delay(delay);
+            }
+            Console.ForegroundColor= ConsoleColor.White;
+            stop = false;
+        }
+
+        internal bool StopLoadingScreen(bool s)
+        {
+            stop = s;
+            while (stop);
+            return true;
+        }
+        internal void WelcomeScreen()
+        {
+            Console.Clear();
             Console.WriteLine("*** Quiz Game - Made by Keymil72 ***");
             Console.WriteLine();
             Console.WriteLine("Wciśnij dowolny przycisk by rozpocząć gre");
             Console.WriteLine();
             Console.WriteLine("Aktualnie dostępny tylko tryb endless");
             Console.ReadKey();
-            game.id = 0;
-            game.gameType = 1;
-            SelectCategoryScreen();
-            Dictionary<Question, Game> toReturn = new Dictionary<Question, Game>();
-            toReturn.Add(question, game);
-            return toReturn;
         }
 
-        void SelectCategoryScreen()
+        internal int SelectCategoryScreen(Dictionary<int, string> categories)
         {
             Console.Clear();
-            var categories = allCategories.Get();
             foreach (var category in categories) Console.WriteLine($"{category.Key}. {category.Value}");
             Console.WriteLine();
             Console.WriteLine("Wybierz kategorie wpisując numer i zatwierdzając enterem");
             Console.WriteLine("Wpisanie dowolnego innego numeru skutkuje wybranie losowej kategorii!");
             int selected = verify.VerifyCategory(Console.ReadLine());
-            question.questionCategory = selected;
-            SelectAmountOfQuestionsScreen();
+
+            return selected;
             
         }
 
-        void SelectAmountOfQuestionsScreen()
+        internal int SelectAmountOfQuestionsScreen()
         {
             Console.Clear();
             Console.WriteLine("Podaj ilość pytań ile mam wylosować");
             int selected = verify.VerifyAmount(Console.ReadLine());
-            game.questionsAmount = selected;
-            SelectTypeOfQuestionScreen();
+
+            return selected;
         }
 
-        void SelectTypeOfQuestionScreen()
+        internal QuestionType? SelectTypeOfQuestionScreen()
         {
             Console.Clear();
             Console.WriteLine("1. Wiele opcji wyboru (4) z czego tylko 1 jest poprawna");
@@ -68,11 +82,10 @@ namespace QuizLogic.Logic
             Console.WriteLine("Wybierz typ pytań wpisując numerek i zatwierdzając enterem");
             Console.WriteLine("Wpisanie dowolnie innego znaku skutkuje wybieranie losowo typu pytania!");
             int selected = verify.VerifyType(Console.ReadLine());
-#pragma warning disable CS8629 // Nullable value type may be null.
-            question.questionType = (QuestionType)convert.ToQuestionType(selected);
-            SelectDifficultyScreen();
+
+            return convert.ToQuestionType(selected);
         }
-        void SelectDifficultyScreen()
+        internal Difficulty? SelectDifficultyScreen()
         {
             Console.Clear();
             Console.WriteLine("1. Łatwe");
@@ -82,13 +95,25 @@ namespace QuizLogic.Logic
             Console.WriteLine("Wybierz trudność pytań wpisując numerek i zatwierdzając enterem");
             Console.WriteLine("Wpisanie dowolnie innego znaku skutkuje wybieranie losowo trudności pytań!");
             int selected = verify.VerifyDififculty(Console.ReadLine());
-            question.difficulty = (Difficulty)convert.toQuestionDifficulty(selected);
-            
+
+            return convert.toQuestionDifficulty(selected);
+
         }
 
         internal Dictionary<Question, string> DisplayQuestionScreen(Question question)
         {
             Console.Clear();
+            Console.Write("Kategoria nr: " + question.questionCategory);
+
+            if (question.difficulty == Difficulty.Easy)
+                Console.ForegroundColor = ConsoleColor.Green;
+            else if (question.difficulty == Difficulty.Medium)
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+            else
+                Console.ForegroundColor = ConsoleColor.Red;
+
+            Console.WriteLine(" (" + deepl.Translate(question.difficulty.ToString()) + ")");
+            Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine(question.content);
             foreach (var item in question.answers.OrderBy(x => x.displayOrder))
             {
@@ -108,18 +133,6 @@ namespace QuizLogic.Logic
             toReturn.Add(question, selected);
 
             return toReturn;
-        }
-
-        internal void CorrectAnswerScreen()
-        {
-            Console.WriteLine();
-            Console.WriteLine("Gratulacje poprawna odpowiedź");
-        }
-
-        internal void WrongAnswerScreen()
-        {
-            Console.WriteLine();
-            Console.WriteLine("Błędna odpowiedź!");
         }
 
         internal void EndGameScreen(int points)

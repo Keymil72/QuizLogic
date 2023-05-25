@@ -13,19 +13,34 @@ namespace QuizLogic.Logic.Models
     {
         Messages msg = new Messages();
         QuestionsGenerator generator = new QuestionsGenerator();
+        InputVerify verify = new InputVerify();
+        AllCategories allCategories = new AllCategories();
 
         internal int start(TriviaService service, string token)
         {
+            msg.LoadingScreen(150, "ładowanie aplikacji");
+            var categories = allCategories.Get();
 
             int points = 0;
-            Dictionary<Question, Game> dictionary = msg.WelcomeScreen();
-            Question question = dictionary.FirstOrDefault().Key;
-            Game game = dictionary.FirstOrDefault().Value;
-            InputVerify verify = new InputVerify();
+ 
+            Question tempQuestion = new Question();
+            Game tempGame = new Game();
 
-            if (game.gameType == 1)
+            bool loaded = msg.StopLoadingScreen(true);
+            msg.WelcomeScreen();
+            tempQuestion.questionCategory = msg.SelectCategoryScreen(categories);
+            tempGame.id = 0;
+            tempGame.gameType = 1;
+            tempGame.questionsAmount = msg.SelectAmountOfQuestionsScreen();
+            tempQuestion.questionType = msg.SelectTypeOfQuestionScreen();
+            tempQuestion.difficulty = msg.SelectDifficultyScreen();
+            
+            if (tempGame.gameType == 1)
             {
-                List<Question> questions = generator.Get(service, token, game, question);
+                msg.LoadingScreen(30*tempGame.questionsAmount, "wyszukiwanie pytań");
+
+                List<Question> questions = generator.Get(service, token, tempGame, tempQuestion);
+                loaded = msg.StopLoadingScreen(true);
                 foreach (Question q in questions)
                 {
                     Dictionary<Question, string> answer = msg.DisplayQuestionScreen(q);

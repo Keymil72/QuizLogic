@@ -12,15 +12,20 @@ namespace QuizLogic.Logic.Models
         internal int VerifyCategory(string key)
         {
             bool parse = int.TryParse(key, out int selected);
-            //28 is max category id - 8
-            int toReturn = parse && selected >= 1 && selected <= 28 ? selected + 8 : 0;
+            //24 is max category id - 8
+            int toReturn = 0;
+            if (parse)
+            {
+                toReturn = selected >= 1 && selected <= 24 ? selected + 8 : 0;
+            }
+            
             return toReturn;
         }
 
         internal int VerifyAmount(string key) 
         {
             bool parse = int.TryParse(key, out int selected);
-            int toReturn = parse && selected >= 1 && selected <= 20? selected : 0;
+            int toReturn = parse && selected >= 1 && selected <= 20? selected : 10;
             return toReturn;
 
         }
