@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DeepL.net" Version="1.7.1" />
     <PackageReference Include="Trivia4NET" Version="1.0.1" />
   </ItemGroup>

@@ -13,16 +13,10 @@ namespace QuizLogic.Logic.Models
         public QuestionType questionType { get; set; }
         public int questionCategory { get; set; }
         public Difficulty difficulty { get; set; }
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public string content { get; set; }
 
         public List<Answer> answers { get; set; }
-
-
-
-
-
-
-
 
     }
 }

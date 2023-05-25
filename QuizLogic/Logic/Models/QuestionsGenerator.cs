@@ -11,13 +11,13 @@ namespace QuizLogic.Logic.Models
 {
     internal class QuestionsGenerator
     {
-        internal List<Question> Get(TriviaService service, string token, QuestionType type, int category, Difficulty difficulty, int howMuch)
+        internal List<Question> Get(TriviaService service, string token, Game g, Question q)
         {
 
             
             //generate a list of questions from Trivia4NET
             var engQuestions = service.GetQuestionsAsync(token,
-                amount: howMuch, difficulty: difficulty, type, category);
+                amount: g.questionsAmount, difficulty: q.difficulty, q.questionType, q.questionCategory);
 
             //translation deepl class
             TranslatorDeepl deepl = new TranslatorDeepl();
@@ -46,7 +46,7 @@ namespace QuizLogic.Logic.Models
                 int max;
 
                 //if statment setting max value for question type to for loop
-                if(type.Equals(QuestionType.YesNo)) 
+                if(q.questionType.Equals(QuestionType.YesNo)) 
                     max = 1;
                 else
                     max = 4;
@@ -90,8 +90,7 @@ namespace QuizLogic.Logic.Models
                 //question add to list of questions
                 temp.id = id;
                 temp.questionType = question.Type;
-                temp.questionCategory = deepl.Translate(question.Category);
-                temp.difficulty = difficulty;
+                temp.difficulty = question.Difficulty;
                 temp.content = deepl.Translate(question.Content);
                 temp.answers = answerList;
                 questions.Add(temp);
