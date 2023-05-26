@@ -1,22 +1,16 @@
-﻿using Polly;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Trivia4NET;
-using static System.Net.Mime.MediaTypeNames;
+﻿using Trivia4NET;
 
 namespace QuizLogic.Logic.Models
 {
     internal class Play
     {
         Messages msg = new Messages();
+        GameMode gameMode = new GameMode();
         QuestionsGenerator generator = new QuestionsGenerator();
-        InputVerify verify = new InputVerify();
         AllCategories allCategories = new AllCategories();
 
-        internal int start(TriviaService service, string token)
+
+        internal int Start(TriviaService service, string token)
         {
             msg.LoadingScreen(150, "ładowanie aplikacji");
             var categories = allCategories.Get();
@@ -26,7 +20,7 @@ namespace QuizLogic.Logic.Models
             Question tempQuestion = new Question();
             Game tempGame = new Game();
 
-            bool loaded = msg.StopLoadingScreen(true);
+            bool loadingEnds = msg.StopLoadingScreen(true);
             msg.WelcomeScreen();
             tempQuestion.questionCategory = msg.SelectCategoryScreen(categories);
             tempGame.id = 0;
@@ -40,21 +34,13 @@ namespace QuizLogic.Logic.Models
                 msg.LoadingScreen(30*tempGame.questionsAmount, "wyszukiwanie pytań");
 
                 List<Question> questions = generator.Get(service, token, tempGame, tempQuestion);
-                loaded = msg.StopLoadingScreen(true);
-                foreach (Question q in questions)
+                loadingEnds = msg.StopLoadingScreen(true);
+                if (questions.Count <= 0)
                 {
-                    Dictionary<Question, string> answer = msg.DisplayQuestionScreen(q);
-                    int checkedValue = verify.VerifyAnswer(q, answer.Values.FirstOrDefault());
-                    while (checkedValue == 0)
-                    {
-                        answer = msg.DisplayQuestionScreen(q);
-                        checkedValue = verify.VerifyAnswer(q, answer.Values.FirstOrDefault());
-                    } 
-                    if (CheckIfAnswerIsCorrect(answer.Keys.FirstOrDefault(), checkedValue)) 
-                        points++;
-                    else
-                        break;
+                    msg.NoQuestionsFoundScreen();
+                    Start(service, token);
                 }
+                points = gameMode.Endless(service, token, questions);
             }
             
 
@@ -62,11 +48,6 @@ namespace QuizLogic.Logic.Models
         }
 
 
-        internal bool CheckIfAnswerIsCorrect(Question question, int selected)
-        {
-            bool toReturn = question.answers.Where(x => x.displayOrder.Equals(selected)).First().isCorrect ? true : false;
 
-            return toReturn;
-        }
     }
 }

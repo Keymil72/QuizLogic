@@ -56,5 +56,12 @@ namespace QuizLogic.Logic.Models
             
             return toReturn;
         }
+
+        internal bool CheckIfAnswerIsCorrect(Question question, int selected)
+        {
+            bool toReturn = question.answers.Where(x => x.displayOrder.Equals(selected)).First().isCorrect ? true : false;
+
+            return toReturn;
+        }
     }
 }

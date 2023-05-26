@@ -14,7 +14,6 @@ namespace QuizLogic.Logic.Models
         internal List<Question> Get(TriviaService service, string token, Game g, Question q)
         {
 
-            
             //generate a list of questions from Trivia4NET
             var engQuestions = service.GetQuestionsAsync(token,
                 amount: g.questionsAmount, difficulty: q.difficulty, q.questionType, q.questionCategory);

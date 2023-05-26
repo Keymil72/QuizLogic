@@ -37,7 +37,7 @@ namespace QuizLogic.Logic
         internal bool StopLoadingScreen(bool s)
         {
             stop = s;
-            while (stop);
+            while (stop) Console.Write(""); ;
             return true;
         }
         internal void WelcomeScreen()
@@ -100,10 +100,20 @@ namespace QuizLogic.Logic
 
         }
 
-        internal Dictionary<Question, string> DisplayQuestionScreen(Question question)
+        internal void NoQuestionsFoundScreen()
         {
             Console.Clear();
-            Console.Write("Kategoria nr: " + question.questionCategory);
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Nie odnaleziono pytań (błąd api)");
+            Console.ReadLine();
+            Console.ForegroundColor= ConsoleColor.White;
+        }
+
+        internal Dictionary<Question, string> DisplayQuestionScreen(Question question, int questionsAmount)
+        {
+            Console.Clear();
+            int questionNumber = question.id + 1;
+            Console.Write("Pytanie nr" + questionNumber);
 
             if (question.difficulty == Difficulty.Easy)
                 Console.ForegroundColor = ConsoleColor.Green;
@@ -127,12 +137,22 @@ namespace QuizLogic.Logic
             string selected = Console.ReadLine();
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 
-            if (selected == null) DisplayQuestionScreen(question);
+            if (selected == null) DisplayQuestionScreen(question, questionsAmount);
 
             Dictionary<Question, string> toReturn = new Dictionary<Question, string>();
             toReturn.Add(question, selected);
 
             return toReturn;
+        }
+
+        internal void GoodAnswerScreen()
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Brawo!");
+            Console.WriteLine("Poprawna odpowiedź");
+            Console.WriteLine("Naciśnij dowolny klawisz by przejść do następnego ptytania");
+            Console.ReadKey();
         }
 
         internal void EndGameScreen(int points)
