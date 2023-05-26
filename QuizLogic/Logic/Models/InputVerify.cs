@@ -44,7 +44,7 @@ namespace QuizLogic.Logic.Models
             return toReturn;
         }
 
-        internal int VerifyAnswer(Question q,string key)
+        internal int VerifyAnswerInput(Question q,string key)
         {
             bool parse = int.TryParse(key, out int selected);
             int toReturn;

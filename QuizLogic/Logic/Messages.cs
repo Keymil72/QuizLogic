@@ -28,6 +28,7 @@ namespace QuizLogic.Logic
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Trwa " + text);
                 Console.WriteLine("[" + l + "]");
+                // prefer to use await over thread.sleep for delay
                 await Task.Delay(delay);
             }
             Console.ForegroundColor= ConsoleColor.White;
@@ -37,6 +38,7 @@ namespace QuizLogic.Logic
         internal bool StopLoadingScreen(bool s)
         {
             stop = s;
+            //when while loop ends return true wich means ending loadingScreen
             while (stop) Console.Write(""); ;
             return true;
         }
@@ -54,6 +56,7 @@ namespace QuizLogic.Logic
         internal int SelectCategoryScreen(Dictionary<int, string> categories)
         {
             Console.Clear();
+            // loop via Dictionary of translated categories
             foreach (var category in categories) Console.WriteLine($"{category.Key}. {category.Value}");
             Console.WriteLine();
             Console.WriteLine("Wybierz kategorie wpisując numer i zatwierdzając enterem");
@@ -109,7 +112,7 @@ namespace QuizLogic.Logic
             Console.ForegroundColor= ConsoleColor.White;
         }
 
-        internal Dictionary<Question, string> DisplayQuestionScreen(Question question, int questionsAmount)
+        internal bool DisplayQuestionScreen(Question question, int questionsAmount)
         {
             Console.Clear();
             int questionNumber = question.id + 1;
@@ -125,6 +128,7 @@ namespace QuizLogic.Logic
             Console.WriteLine(" (" + deepl.Translate(question.difficulty.ToString()) + ")");
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine(question.content);
+            // display question answers ordered by displayorder
             foreach (var item in question.answers.OrderBy(x => x.displayOrder))
             {
                 Console.WriteLine(item.displayOrder + ". " + item.content);
@@ -139,8 +143,13 @@ namespace QuizLogic.Logic
 
             if (selected == null) DisplayQuestionScreen(question, questionsAmount);
 
-            Dictionary<Question, string> toReturn = new Dictionary<Question, string>();
-            toReturn.Add(question, selected);
+            //creating dictionary to return values
+
+            int userAnswer = verify.VerifyAnswerInput(question, selected);
+            if (userAnswer == 0)
+                DisplayQuestionScreen(question, questionsAmount);
+
+            bool toReturn = verify.CheckIfAnswerIsCorrect(question, userAnswer);
 
             return toReturn;
         }

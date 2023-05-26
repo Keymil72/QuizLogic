@@ -11,22 +11,21 @@ namespace QuizLogic.Logic.Models
             int points = 0;
             foreach (Question q in questions)
             {
-                Dictionary<Question, string> answer = msg.DisplayQuestionScreen(q, questions.Count);
-                int checkedValue = verify.VerifyAnswer(q, answer.Values.FirstOrDefault());
-                while (checkedValue == 0)
+
+                bool isAnswerCorrect = msg.DisplayQuestionScreen(q, questions.Count);
+
+
+                if (isAnswerCorrect)
                 {
-                    answer = msg.DisplayQuestionScreen(q, questions.Count);
-                    checkedValue = verify.VerifyAnswer(q, answer.Values.FirstOrDefault());
-                }
-                if (verify.CheckIfAnswerIsCorrect(answer.Keys.FirstOrDefault(), checkedValue))
-                {
+                    //good answer screen and adding pint
                     msg.GoodAnswerScreen();
                     points++;
                 }
+                // if answer is wrong break of all loops
                 else
                     break;
             }
-
+            //returning int points
             return points;
         }
     }
