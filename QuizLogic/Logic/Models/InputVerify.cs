@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Trivia4NET.Entities;
+﻿using Trivia4NET.Entities;
 
 namespace QuizLogic.Logic.Models
 {

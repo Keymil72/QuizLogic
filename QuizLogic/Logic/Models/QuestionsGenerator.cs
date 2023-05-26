@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Trivia4NET;
 using Trivia4NET.Entities;
-using Trivia4NET.Payloads;
 
 namespace QuizLogic.Logic.Models
 {
@@ -15,8 +14,7 @@ namespace QuizLogic.Logic.Models
         {
 
             //generate a list of questions from Trivia4NET
-            var engQuestions = service.GetQuestionsAsync(token,
-                amount: g.questionsAmount, difficulty: q.difficulty, q.questionType, q.questionCategory);
+            var engQuestions = service.GetQuestionsAsync(token, g.questionsAmount, q.difficulty, q.questionType, q.questionCategory);
 
             //translation deepl class
             TranslatorDeepl deepl = new TranslatorDeepl();

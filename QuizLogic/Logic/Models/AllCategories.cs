@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Trivia4NET;
 
-namespace QuizLogic.Logic
+namespace QuizLogic.Logic.Models
 {
     internal class AllCategories
     {
@@ -16,7 +16,7 @@ namespace QuizLogic.Logic
             Dictionary<int, string> categories = new Dictionary<int, string>();
             var service = new TriviaService();
             var engCategoriesResponse = service.GetCategoriesAsync().GetAwaiter().GetResult().Categories;
-            foreach ( var category in engCategoriesResponse ) categories.Add( category.Id - 8, deepl.Translate(category.Name) );
+            foreach (var category in engCategoriesResponse) categories.Add(category.Id - 8, deepl.Translate(category.Name));
 
             return categories;
         }

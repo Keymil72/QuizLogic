@@ -1,10 +1,8 @@
-﻿using QuizLogic.Logic.Models;
-
-using Trivia4NET.Entities;
+﻿using Trivia4NET.Entities;
 using Convert = QuizLogic.Logic.Models.Convert;
 using Question = QuizLogic.Logic.Models.Question;
 
-namespace QuizLogic.Logic
+namespace QuizLogic.Logic.Models
 {
     internal class Messages
     {
@@ -15,6 +13,7 @@ namespace QuizLogic.Logic
         bool stop = false;
         internal async void LoadingScreen(int delay, string text)
         {
+            int timeout = 1000 * 30;
             string l = "..................................................";
             for (int i = 0; i < 50; i++)
             {
@@ -31,7 +30,21 @@ namespace QuizLogic.Logic
                 // prefer to use await over thread.sleep for delay
                 await Task.Delay(delay);
             }
-            Console.ForegroundColor= ConsoleColor.White;
+            if (!stop)
+            {
+                await Task.Delay(timeout);
+                if (!stop)
+                {
+                    Console.Clear();
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Api Time Out");
+                    Console.WriteLine("Zresetuj aplikacje");
+                    Console.ForegroundColor = ConsoleColor.White;
+
+                }
+            }
+
+            Console.ForegroundColor = ConsoleColor.White;
             stop = false;
         }
 
@@ -42,6 +55,7 @@ namespace QuizLogic.Logic
             while (stop) Console.Write(""); ;
             return true;
         }
+
         internal void WelcomeScreen()
         {
             Console.Clear();
@@ -64,7 +78,7 @@ namespace QuizLogic.Logic
             int selected = verify.VerifyCategory(Console.ReadLine());
 
             return selected;
-            
+
         }
 
         internal int SelectAmountOfQuestionsScreen()
@@ -109,14 +123,15 @@ namespace QuizLogic.Logic
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Nie odnaleziono pytań (błąd api)");
             Console.ReadLine();
-            Console.ForegroundColor= ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
-        internal bool DisplayQuestionScreen(Question question, int questionsAmount)
+        internal bool DisplayQuestionScreen(Question question, int questionNumber, int questionsAmount)
         {
             Console.Clear();
-            int questionNumber = question.id + 1;
-            Console.Write("Pytanie nr" + questionNumber);
+            Console.Write("Pytanie ");
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.Write(questionNumber + "/" + questionsAmount);
 
             if (question.difficulty == Difficulty.Easy)
                 Console.ForegroundColor = ConsoleColor.Green;
@@ -127,6 +142,7 @@ namespace QuizLogic.Logic
 
             Console.WriteLine(" (" + deepl.Translate(question.difficulty.ToString()) + ")");
             Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine();
             Console.WriteLine(question.content);
             // display question answers ordered by displayorder
             foreach (var item in question.answers.OrderBy(x => x.displayOrder))
@@ -141,13 +157,13 @@ namespace QuizLogic.Logic
             string selected = Console.ReadLine();
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 
-            if (selected == null) DisplayQuestionScreen(question, questionsAmount);
+            if (selected == null) DisplayQuestionScreen(question, questionNumber, questionsAmount);
 
             //creating dictionary to return values
 
             int userAnswer = verify.VerifyAnswerInput(question, selected);
             if (userAnswer == 0)
-                DisplayQuestionScreen(question, questionsAmount);
+                DisplayQuestionScreen(question, questionNumber, questionsAmount);
 
             bool toReturn = verify.CheckIfAnswerIsCorrect(question, userAnswer);
 
@@ -162,15 +178,18 @@ namespace QuizLogic.Logic
             Console.WriteLine("Poprawna odpowiedź");
             Console.WriteLine("Naciśnij dowolny klawisz by przejść do następnego ptytania");
             Console.ReadKey();
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
         internal void EndGameScreen(int points)
         {
             Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Magenta;
             Console.WriteLine("Zakończyłeś grę z wynikiem " + points + "pkt");
             Console.WriteLine("***   Gratulacje!!!   ***");
             Console.WriteLine();
             Console.WriteLine("Wciśnij dowolny klawisz by zacząć od nowa");
+            Console.ForegroundColor = ConsoleColor.White;
             Console.ReadKey();
         }
     }

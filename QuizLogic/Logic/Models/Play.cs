@@ -12,7 +12,7 @@ namespace QuizLogic.Logic.Models
 
         internal int Start(TriviaService service, string token)
         {
-            msg.LoadingScreen(150, "ładowanie aplikacji");
+            msg.LoadingScreen(200, "ładowanie aplikacji");
             var categories = allCategories.Get();
 
             int points = 0;
@@ -31,9 +31,12 @@ namespace QuizLogic.Logic.Models
             
             if (tempGame.gameType == 1)
             {
-                msg.LoadingScreen(30*tempGame.questionsAmount, "wyszukiwanie pytań");
+                msg.LoadingScreen(40*tempGame.questionsAmount, "wyszukiwanie pytań");
+                List<Question> questions = null;
 
-                List<Question> questions = generator.Get(service, token, tempGame, tempQuestion);
+
+
+                questions = generator.Get(service, token, tempGame, tempQuestion);
                 loadingEnds = msg.StopLoadingScreen(true);
                 if (questions.Count <= 0)
                 {
